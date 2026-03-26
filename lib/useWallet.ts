@@ -64,10 +64,11 @@ export function useWallet() {
       .then((accounts: any) => {
         if (accounts.length > 0) setAddress(accounts[0]);
       })
-      .catch(() => {});
+      .catch(() => { });
 
     // Listeners
-    const handleAccounts = (accounts: string[]) => {
+    const handleAccounts = (...args: unknown[]) => {
+      const accounts = args[0] as string[];
       setAddress(accounts.length > 0 ? accounts[0] : null);
     };
     const handleChain = () => window.location.reload();
@@ -76,8 +77,8 @@ export function useWallet() {
     window.ethereum.on("chainChanged", handleChain);
 
     return () => {
-      window.ethereum.removeListener("accountsChanged", handleAccounts);
-      window.ethereum.removeListener("chainChanged", handleChain);
+      window.ethereum?.removeListener("accountsChanged", handleAccounts);
+      window.ethereum?.removeListener("chainChanged", handleChain);
     };
   }, []);
 
