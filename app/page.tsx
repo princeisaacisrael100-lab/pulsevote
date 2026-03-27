@@ -11,7 +11,7 @@ import Toast from "@/components/Toast";
 import styles from "./page.module.css";
 
 type FilterTab = "all" | "live" | "closed" | "my";
-type ToastState = { msg: string; type: "success"|"error"|"info" } | null;
+type ToastState = { msg: string; type: "success" | "error" | "info" } | null;
 
 export default function Home() {
   const wallet = useWallet();
@@ -198,6 +198,10 @@ export default function Home() {
         loading={wallet.loading}
         isAdmin={isAdmin}
         onConnect={handleConnect}
+        onDisconnect={() => {
+          wallet.disconnect();
+          showToast("Wallet disconnected.", "info");
+        }}
       />
 
       {/* Admin Mode active */}
@@ -281,10 +285,10 @@ export default function Home() {
                 {f === "all"
                   ? "All"
                   : f === "live"
-                  ? "🟢 Live"
-                  : f === "closed"
-                  ? "⚫ Closed"
-                  : "👤 My Proposals"}
+                    ? "🟢 Live"
+                    : f === "closed"
+                      ? "⚫ Closed"
+                      : "👤 My Proposals"}
               </button>
             ))}
           </div>
@@ -327,13 +331,13 @@ export default function Home() {
           </div>
         ) : loading ? (
           <div className={styles.grid}>
-            {[1,2,3].map(i => (
+            {[1, 2, 3].map(i => (
               <div key={i} className={styles.skeleton}>
-                <div className={styles.skel} style={{width:"50%",height:"12px"}} />
-                <div className={styles.skel} style={{width:"85%",height:"20px",marginTop:"14px"}} />
-                <div className={styles.skel} style={{width:"100%",height:"6px",marginTop:"24px"}} />
-                <div className={styles.skel} style={{width:"100%",height:"6px",marginTop:"10px"}} />
-                <div className={styles.skel} style={{width:"70%",height:"6px",marginTop:"10px"}} />
+                <div className={styles.skel} style={{ width: "50%", height: "12px" }} />
+                <div className={styles.skel} style={{ width: "85%", height: "20px", marginTop: "14px" }} />
+                <div className={styles.skel} style={{ width: "100%", height: "6px", marginTop: "24px" }} />
+                <div className={styles.skel} style={{ width: "100%", height: "6px", marginTop: "10px" }} />
+                <div className={styles.skel} style={{ width: "70%", height: "6px", marginTop: "10px" }} />
               </div>
             ))}
           </div>

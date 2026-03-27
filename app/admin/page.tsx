@@ -93,6 +93,10 @@ export default function AdminPage() {
         loading={wallet.loading}
         isAdmin={isAdmin}
         onConnect={handleConnect}
+        onDisconnect={() => {
+          wallet.disconnect();
+          showToast("Logged out.", "info");
+        }}
       />
 
       <div className={styles.page}>

@@ -82,14 +82,19 @@ export function useWallet() {
     };
   }, []);
 
+  const disconnect = useCallback(() => {
+    setAddress(null);
+    setError(null);
+  }, []);
+
   const short = useMemo(
     () => (address ? address.slice(0, 6) + "..." + address.slice(-4) : null),
     [address]
   );
 
   return useMemo(
-    () => ({ address, short, loading, error, connect, getProvider, getSigner }),
-    [address, short, loading, error, connect, getProvider, getSigner]
+    () => ({ address, short, loading, error, connect, disconnect, getProvider, getSigner }),
+    [address, short, loading, error, connect, disconnect, getProvider, getSigner]
   );
 }
 
