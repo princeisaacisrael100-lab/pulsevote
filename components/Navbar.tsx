@@ -24,7 +24,9 @@ export default function Navbar({ address, short, loading, isAdmin, onConnect, on
     <nav className={styles.nav}>
       <div className={styles.inner}>
         <Link href="/" className={styles.brand}>
-          <span className={styles.brandIcon}>⚡</span>
+          <div className={styles.brandMark}>
+            <div className={styles.brandMarkDot} />
+          </div>
           <span className={styles.brandName}>PulseVote</span>
         </Link>
 
@@ -32,18 +34,14 @@ export default function Navbar({ address, short, loading, isAdmin, onConnect, on
           <Link href="/" className={styles.link}>Polls</Link>
           {isAdmin && (
             <Link href="/admin" className={styles.adminLink}>
-              👑 Admin
+              Admin
             </Link>
           )}
         </div>
 
         <div className={styles.actions}>
           <button className={styles.themeToggle} onClick={toggle} title="Toggle theme">
-            <div className={`${styles.toggleBar} ${theme === "dark" ? styles.dark : ""}`}>
-              <div className={styles.toggleCircle}>
-                {theme === "dark" ? "🌙" : "☀️"}
-              </div>
-            </div>
+            {theme === "dark" ? "☀" : "☽"}
           </button>
 
           {mounted && (
@@ -60,13 +58,11 @@ export default function Navbar({ address, short, loading, isAdmin, onConnect, on
                     <span className={styles.walletDot} />
                     {short}
                     {isAdmin && (
-                      <span className={styles.adminLabel} title="Verified Admin">
-                        👑 Admin
-                      </span>
+                      <span className={styles.adminLabel} title="Verified Admin">Admin</span>
                     )}
                   </>
                 ) : (
-                  "Connect Wallet"
+                  "Connect wallet"
                 )}
               </button>
 
@@ -76,7 +72,7 @@ export default function Navbar({ address, short, loading, isAdmin, onConnect, on
                   onClick={onDisconnect}
                   title="Disconnect wallet"
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
                     <polyline points="16 17 21 12 16 7" />
                     <line x1="21" y1="12" x2="9" y2="12" />

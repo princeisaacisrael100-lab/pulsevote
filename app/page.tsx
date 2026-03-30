@@ -16,18 +16,8 @@ type ToastState = { msg: string; type: "success" | "error" | "info" } | null;
 export default function Home() {
   const wallet = useWallet();
   const {
-    polls,
-    loading,
-    error,
-    isAdmin,
-    loadPolls,
-    submitPoll,
-    castVote,
-    sendReaction,
-    approvePoll,
-    rejectPoll,
-    closePoll,
-    deletePoll,
+    polls, loading, error, isAdmin, loadPolls, submitPoll,
+    castVote, sendReaction, approvePoll, rejectPoll, closePoll, deletePoll,
   } = usePolls();
 
   const [activePoll, setActivePoll] = useState<Poll | null>(null);
@@ -38,42 +28,29 @@ export default function Home() {
   const [search, setSearch] = useState("");
   const [mounted, setMounted] = useState(false);
 
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  useEffect(() => { setMounted(true); }, []);
 
   const showToast = (msg: string, type: "success" | "error" | "info" = "info") =>
     setToast({ msg, type });
   const clearToast = useCallback(() => setToast(null), []);
 
-  const refresh = useCallback(
-    async (addr: string | null) => {
-      const p = wallet.getProvider();
-      if (p) await loadPolls(p, addr); // Load all polls
-    },
-    [wallet, loadPolls]
-  );
+  const refresh = useCallback(async (addr: string | null) => {
+    const p = wallet.getProvider();
+    if (p) await loadPolls(p, addr);
+  }, [wallet, loadPolls]);
 
-  // Load polls on mount or when address changes
   useEffect(() => {
     const p = wallet.getProvider();
-    if (p) {
-      loadPolls(p, wallet.address); // Load all polls
-    }
+    if (p) loadPolls(p, wallet.address);
   }, [wallet.address, wallet.getProvider, loadPolls]);
 
   const handleConnect = async () => {
     await wallet.connect();
-    if (wallet.address) {
-      showToast("Wallet connected!", "success");
-    }
+    if (wallet.address) showToast("Wallet connected!", "success");
   };
 
   const handleVote = (pollId: number) => {
-    if (!wallet.address) {
-      showToast("Connect your wallet to vote.", "error");
-      return;
-    }
+    if (!wallet.address) { showToast("Connect your wallet to vote.", "error"); return; }
     const poll = polls.find((p) => p.id === pollId);
     if (poll) setActivePoll(poll);
   };
@@ -82,32 +59,22 @@ export default function Home() {
     const signer = wallet.getSigner();
     if (!signer || !activePoll) throw new Error("No signer");
     const hash = await castVote(signer, activePoll.id, optionIndex);
-    showToast("Vote recorded on-chain! ✓", "success");
+    showToast("Vote recorded on-chain!", "success");
     await refresh(wallet.address);
     return hash;
   };
 
   const handleReact = async (pollId: number, type: number) => {
     const signer = wallet.getSigner();
-    if (!signer) {
-      showToast("Connect your wallet first.", "error");
-      return;
-    }
+    if (!signer) { showToast("Connect your wallet first.", "error"); return; }
     try {
       await sendReaction(signer, pollId, type);
       showToast("Reaction added!", "success");
       await refresh(wallet.address);
-    } catch {
-      showToast("Could not add reaction.", "error");
-    }
+    } catch { showToast("Could not add reaction.", "error"); }
   };
 
-  const handleSubmitPoll = async (
-    question: string,
-    options: string[],
-    expiresAt: number,
-    category: number
-  ) => {
+  const handleSubmitPoll = async (question: string, options: string[], expiresAt: number, category: number) => {
     const signer = wallet.getSigner();
     if (!signer) throw new Error("Connect wallet first");
     await submitPoll(signer, question, options, expiresAt, category);
@@ -116,52 +83,28 @@ export default function Home() {
   };
 
   const handleApprove = async (pollId: number) => {
-    const signer = wallet.getSigner();
-    if (!signer) return;
-    try {
-      await approvePoll(signer, pollId);
-      showToast("Poll approved!", "success");
-      await refresh(wallet.address);
-    } catch {
-      showToast("Failed to approve.", "error");
-    }
+    const signer = wallet.getSigner(); if (!signer) return;
+    try { await approvePoll(signer, pollId); showToast("Poll approved!", "success"); await refresh(wallet.address); }
+    catch { showToast("Failed to approve.", "error"); }
   };
 
   const handleReject = async (pollId: number) => {
-    const signer = wallet.getSigner();
-    if (!signer) return;
-    try {
-      await rejectPoll(signer, pollId);
-      showToast("Poll rejected.", "success");
-      await refresh(wallet.address);
-    } catch {
-      showToast("Failed to reject.", "error");
-    }
+    const signer = wallet.getSigner(); if (!signer) return;
+    try { await rejectPoll(signer, pollId); showToast("Poll rejected.", "success"); await refresh(wallet.address); }
+    catch { showToast("Failed to reject.", "error"); }
   };
 
   const handleClose = async (pollId: number, asAdmin: boolean) => {
-    const signer = wallet.getSigner();
-    if (!signer) return;
-    try {
-      await closePoll(signer, pollId, asAdmin);
-      showToast("Poll closed.", "success");
-      await refresh(wallet.address);
-    } catch {
-      showToast("Only the poll creator can close this.", "error");
-    }
+    const signer = wallet.getSigner(); if (!signer) return;
+    try { await closePoll(signer, pollId, asAdmin); showToast("Poll closed.", "success"); await refresh(wallet.address); }
+    catch { showToast("Only the poll creator can close this.", "error"); }
   };
 
   const handleDelete = async (pollId: number, asAdmin: boolean) => {
     if (!confirm("Permanently delete this poll?")) return;
-    const signer = wallet.getSigner();
-    if (!signer) return;
-    try {
-      await deletePoll(signer, pollId, asAdmin);
-      showToast("Poll deleted.", "success");
-      await refresh(wallet.address);
-    } catch {
-      showToast("Only the poll creator can delete this.", "error");
-    }
+    const signer = wallet.getSigner(); if (!signer) return;
+    try { await deletePoll(signer, pollId, asAdmin); showToast("Poll deleted.", "success"); await refresh(wallet.address); }
+    catch { showToast("Only the poll creator can delete this.", "error"); }
   };
 
   // Filtering
@@ -169,24 +112,16 @@ export default function Home() {
     const isExpired = p.expiresAt > 0 && Date.now() / 1000 > p.expiresAt;
     const isLive = p.status === STATUS.ACTIVE && !isExpired;
     const isClosed = p.status === STATUS.CLOSED || isExpired;
-
     if (filter === "live" && !isLive) return false;
     if (filter === "closed" && !isClosed) return false;
     if (filter === "my" && !p.isCreator) return false;
-
     if (catFilter !== null && p.category !== catFilter) return false;
-    if (search && !p.question.toLowerCase().includes(search.toLowerCase()))
-      return false;
+    if (search && !p.question.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
 
-  const totalVotes = polls.reduce(
-    (s, p) => s + p.votes.reduce((a, b) => a + b, 0),
-    0
-  );
-  const liveCount = polls.filter(
-    (p) => p.status === STATUS.ACTIVE && p.expiresAt > Date.now() / 1000
-  ).length;
+  const totalVotes = polls.reduce((s, p) => s + p.votes.reduce((a, b) => a + b, 0), 0);
+  const liveCount = polls.filter((p) => p.status === STATUS.ACTIVE && p.expiresAt > Date.now() / 1000).length;
 
   if (!mounted) return null;
 
@@ -198,83 +133,77 @@ export default function Home() {
         loading={wallet.loading}
         isAdmin={isAdmin}
         onConnect={handleConnect}
-        onDisconnect={() => {
-          wallet.disconnect();
-          showToast("Wallet disconnected.", "info");
-        }}
+        onDisconnect={() => { wallet.disconnect(); showToast("Wallet disconnected.", "info"); }}
       />
 
-      {/* Admin Mode active */}
       {isAdmin && (
         <div className={styles.adminBanner}>
           <span className={styles.adminBannerIcon}>🔒</span>
           <p>
-            You are connected as the <strong>Verified Auditor</strong>. You have exclusive rights to approve, reject, and manage all community polls.
+            Connected as <strong>Verified Auditor</strong> — you can approve, reject, and manage all community polls.
           </p>
         </div>
       )}
 
       {/* Hero */}
       <div className={styles.hero}>
-        <div className={styles.heroContent}>
-          <div className={styles.heroPill}>⚡ Powered by Ethereum · Sepolia</div>
-          <h1 className={styles.heroTitle}>
-            The pulse of<br />
-            <span className={styles.heroGold}>community decisions</span>
-          </h1>
-          <p className={styles.heroSub}>
-            Submit a proposal, cast your vote, react to polls — everything recorded immutably on-chain.
-            Admin-curated for quality and fairness.
-          </p>
-          <div className={styles.heroBtns}>
-            {wallet.address ? (
-              <button className={styles.primaryBtn} onClick={() => setShowSubmit(true)}>
-                + Submit a Poll
-              </button>
-            ) : (
-              <button className={styles.primaryBtn} onClick={handleConnect}>
-                Connect Wallet →
-              </button>
-            )}
-            <a
-              href={`https://sepolia.etherscan.io/address/${CONTRACT_ADDRESS}`}
-              target="_blank" rel="noreferrer"
-              className={styles.ghostBtn}
-            >
-              View Contract ↗
-            </a>
-          </div>
+        <div className={styles.heroEyebrow}>
+          <span className={styles.heroEyebrowDot} />
+          Ethereum · Sepolia Testnet
+        </div>
+        <h1 className={styles.heroTitle}>
+          The pulse of<br />
+          <span className={styles.heroAccent}>community decisions</span>
+        </h1>
+        <p className={styles.heroSub}>
+          Submit proposals, vote on-chain, and react to polls — everything recorded immutably on Ethereum.
+        </p>
+        <div className={styles.heroBtns}>
+          {wallet.address ? (
+            <button className={styles.primaryBtn} onClick={() => setShowSubmit(true)}>
+              Submit a poll
+            </button>
+          ) : (
+            <button className={styles.primaryBtn} onClick={handleConnect}>
+              Connect wallet
+            </button>
+          )}
+          <a
+            href={`https://sepolia.etherscan.io/address/${CONTRACT_ADDRESS}`}
+            target="_blank" rel="noreferrer"
+            className={styles.ghostBtn}
+          >
+            View contract ↗
+          </a>
         </div>
 
-        {/* Stats bar */}
-        <div className={styles.statsBar}>
+        {/* Stats */}
+        <div className={styles.statsRow}>
           <div className={styles.stat}>
             <span className={styles.statNum}>{wallet.address ? polls.length : "—"}</span>
-            <span className={styles.statLabel}>Total Polls</span>
+            <span className={styles.statLabel}>Total polls</span>
           </div>
-          <div className={styles.statDivider} />
           <div className={styles.stat}>
             <span className={styles.statNum}>{wallet.address ? liveCount : "—"}</span>
-            <span className={styles.statLabel}>Live Now</span>
+            <span className={styles.statLabel}>Live now</span>
           </div>
-          <div className={styles.statDivider} />
           <div className={styles.stat}>
             <span className={styles.statNum}>{wallet.address ? totalVotes : "—"}</span>
-            <span className={styles.statLabel}>Total Votes</span>
+            <span className={styles.statLabel}>Total votes</span>
           </div>
-          <div className={styles.statDivider} />
           <div className={styles.stat}>
             <span className={styles.statNum}>{wallet.address ? polls.filter(p => p.voted).length : "—"}</span>
-            <span className={styles.statLabel}>My Votes</span>
+            <span className={styles.statLabel}>My votes</span>
           </div>
         </div>
       </div>
 
       {/* Polls section */}
       <div className={styles.container}>
+        <div className={styles.divider} />
 
-        {/* Filters */}
-        <div className={styles.filtersRow}>
+        {/* Filters row */}
+        <div className={styles.sectionHead}>
           <div className={styles.filterTabs}>
             {(["all", "live", "closed", "my"] as FilterTab[]).map((f) => (
               <button
@@ -282,19 +211,17 @@ export default function Home() {
                 className={`${styles.tab} ${filter === f ? styles.activeTab : ""}`}
                 onClick={() => setFilter(f)}
               >
-                {f === "all"
-                  ? "All"
-                  : f === "live"
-                    ? "🟢 Live"
-                    : f === "closed"
-                      ? "⚫ Closed"
-                      : "👤 My Proposals"}
+                {f === "all" ? "All" : f === "live" ? "Live" : f === "closed" ? "Closed" : "Mine"}
               </button>
             ))}
           </div>
 
           <div className={styles.searchWrap}>
-            <span className={styles.searchIcon}>🔍</span>
+            <span className={styles.searchIcon}>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
+              </svg>
+            </span>
             <input
               className={styles.searchInput}
               placeholder="Search polls..."
@@ -324,20 +251,20 @@ export default function Home() {
         {/* Content */}
         {!wallet.address ? (
           <div className={styles.empty}>
-            <div className={styles.emptyIcon}>🗳️</div>
+            <div className={styles.emptyIcon}>🗳</div>
             <h3 className={styles.emptyTitle}>Connect to participate</h3>
             <p className={styles.emptySub}>Connect your MetaMask wallet on Sepolia to view and vote on community polls.</p>
-            <button className={styles.primaryBtn} onClick={handleConnect}>Connect Wallet →</button>
+            <button className={styles.primaryBtn} onClick={handleConnect}>Connect wallet</button>
           </div>
         ) : loading ? (
           <div className={styles.grid}>
             {[1, 2, 3].map(i => (
               <div key={i} className={styles.skeleton}>
-                <div className={styles.skel} style={{ width: "50%", height: "12px" }} />
-                <div className={styles.skel} style={{ width: "85%", height: "20px", marginTop: "14px" }} />
-                <div className={styles.skel} style={{ width: "100%", height: "6px", marginTop: "24px" }} />
-                <div className={styles.skel} style={{ width: "100%", height: "6px", marginTop: "10px" }} />
-                <div className={styles.skel} style={{ width: "70%", height: "6px", marginTop: "10px" }} />
+                <div className={styles.skel} style={{ width: "45%", height: "10px" }} />
+                <div className={styles.skel} style={{ width: "80%", height: "18px", marginTop: "14px" }} />
+                <div className={styles.skel} style={{ width: "100%", height: "5px", marginTop: "20px" }} />
+                <div className={styles.skel} style={{ width: "100%", height: "5px", marginTop: "8px" }} />
+                <div className={styles.skel} style={{ width: "65%", height: "5px", marginTop: "8px" }} />
               </div>
             ))}
           </div>
@@ -351,7 +278,7 @@ export default function Home() {
                 : "Try a different filter or search term."}
             </p>
             {polls.length === 0 && (
-              <button className={styles.primaryBtn} onClick={() => setShowSubmit(true)}>Submit a Poll →</button>
+              <button className={styles.primaryBtn} onClick={() => setShowSubmit(true)}>Submit a poll</button>
             )}
           </div>
         ) : (
@@ -383,7 +310,6 @@ export default function Home() {
         </button>
       )}
 
-      {/* Modals */}
       {activePoll && (
         <VoteModal poll={activePoll} onClose={() => setActivePoll(null)} onSubmit={handleSubmitVote} />
       )}
