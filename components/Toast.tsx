@@ -1,6 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import styles from "./Toast.module.css";
+import { CheckIcon, CrossIcon, DotIcon } from "@/components/Icons";
 
 interface Props { message: string | null; type?: "success" | "error" | "info"; onClear: () => void; }
 
@@ -16,10 +17,10 @@ export default function Toast({ message, type = "info", onClear }: Props) {
 
   if (!message) return null;
 
-  const icons: Record<string, string> = {
-    success: "✓",
-    error: "✕",
-    info: "·",
+  const icons: Record<string, React.ReactNode> = {
+    success: <CheckIcon size={16} />,
+    error: <CrossIcon size={16} />,
+    info: <DotIcon size={16} />,
   };
 
   return (
@@ -29,3 +30,4 @@ export default function Toast({ message, type = "info", onClear }: Props) {
     </div>
   );
 }
+

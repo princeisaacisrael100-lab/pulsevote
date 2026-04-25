@@ -4,6 +4,22 @@ import { Poll, CATEGORIES, CATEGORY_ICONS, STATUS, CONTRACT_ADDRESS } from "@/li
 import { formatDistanceToNow, format } from "date-fns";
 import styles from "./PollCard.module.css";
 
+import {
+  CrownIcon,
+  CheckIcon,
+  CrossIcon,
+  LockIcon,
+  TrashIcon,
+  TrophyIcon,
+  FireIcon,
+  ThumbsUpIcon,
+  MindBlownIcon,
+  StatsIcon,
+  ExternalLinkIcon,
+  ArrowRightIcon,
+  CATEGORY_SVG_ICONS,
+} from "@/components/Icons";
+
 interface Props {
   poll: Poll;
   isAdmin: boolean;
@@ -34,7 +50,7 @@ export default function PollCard({
   const maxVotes = Math.max(...poll.votes, 0);
   const winnerIdx = total > 0 ? poll.votes.indexOf(maxVotes) : -1;
   const category = CATEGORIES[poll.category] ?? "General";
-  const catIcon = CATEGORY_ICONS[category] ?? "💬";
+  const CatIcon = CATEGORY_SVG_ICONS[category];
   const canManage = poll.isCreator || isAdmin;
 
   const isExpired = poll.expiresAt > 0 && Date.now() / 1000 > poll.expiresAt;
@@ -61,13 +77,13 @@ export default function PollCard({
       <div className={styles.topRow}>
         <div className={styles.meta}>
           <span className={styles.catBadge}>
-            {catIcon} {category}
+            {CatIcon && <CatIcon size={12} style={{ marginRight: '4px' }} />} {category}
           </span>
           <span className={`${styles.statusBadge} ${statusClass}`}>
             {statusLabel}
           </span>
           {poll.isCreator && <span className={styles.yourBadge}>You</span>}
-          {isAdmin && <span className={styles.adminBadge}>👑</span>}
+          {isAdmin && <span className={styles.adminBadge}><CrownIcon size={12} /></span>}
         </div>
         {canManage && (
           <div className={styles.menuWrap}>
@@ -88,7 +104,7 @@ export default function PollCard({
                         setMenuOpen(false);
                       }}
                     >
-                      ✓ Approve Poll
+                      <CheckIcon size={14} style={{ marginRight: '8px' }} /> Approve Poll
                     </button>
                     <button
                       className={styles.ddItem}
@@ -97,7 +113,7 @@ export default function PollCard({
                         setMenuOpen(false);
                       }}
                     >
-                      ✕ Reject Poll
+                      <CrossIcon size={14} style={{ marginRight: '8px' }} /> Reject Poll
                     </button>
                   </>
                 )}
@@ -109,7 +125,7 @@ export default function PollCard({
                       setMenuOpen(false);
                     }}
                   >
-                    🔒 Close Poll
+                    <LockIcon size={14} style={{ marginRight: '8px' }} /> Close Poll
                   </button>
                 )}
                 <button
@@ -119,7 +135,7 @@ export default function PollCard({
                     setMenuOpen(false);
                   }}
                 >
-                  🗑 Delete {isAdmin && !poll.isCreator ? "(Admin)" : ""}
+                  <TrashIcon size={14} style={{ marginRight: '8px' }} /> Delete {isAdmin && !poll.isCreator ? "(Admin)" : ""}
                 </button>
               </div>
             )}
@@ -142,7 +158,7 @@ export default function PollCard({
             >
               <div className={styles.optTop}>
                 <span className={styles.optLabel}>
-                  {isWinner && "🏆 "}
+                  {isWinner && <TrophyIcon size={14} style={{ marginRight: '6px', color: '#ffb700', verticalAlign: 'middle' }} />}
                   {opt}
                 </span>
                 <span className={styles.optPct}>{pct}%</span>
@@ -218,7 +234,7 @@ export default function PollCard({
             disabled={poll.reacted || !walletAddress}
             title="Fire"
           >
-            🔥 {poll.fireCount}
+            <FireIcon size={14} style={{ marginRight: '4px' }} /> {poll.fireCount}
           </button>
           <button
             className={`${styles.reactBtn} ${
@@ -228,7 +244,7 @@ export default function PollCard({
             disabled={poll.reacted || !walletAddress}
             title="Like"
           >
-            👍 {poll.likeCount}
+            <ThumbsUpIcon size={14} style={{ marginRight: '4px' }} /> {poll.likeCount}
           </button>
           <button
             className={`${styles.reactBtn} ${
@@ -238,7 +254,7 @@ export default function PollCard({
             disabled={poll.reacted || !walletAddress}
             title="Mind blown"
           >
-            🤯 {poll.mindBlownCount}
+            <MindBlownIcon size={14} style={{ marginRight: '4px' }} /> {poll.mindBlownCount}
           </button>
         </div>
 
@@ -247,7 +263,7 @@ export default function PollCard({
             className={styles.statsBtn}
             onClick={() => setExpanded((e) => !e)}
           >
-            {expanded ? "Hide stats" : "📊 Stats"}
+            {expanded ? "Hide stats" : <><StatsIcon size={14} style={{ marginRight: '6px' }} /> Stats</>}
           </button>
 
           <a
@@ -256,11 +272,11 @@ export default function PollCard({
             rel="noreferrer"
             className={styles.ethLink}
           >
-            ↗
+            <ExternalLinkIcon size={14} />
           </a>
 
           {poll.voted ? (
-            <span className={styles.votedTag}>✓ Voted</span>
+            <span className={styles.votedTag}><CheckIcon size={12} style={{ marginRight: '4px' }} /> Voted</span>
           ) : isPending ? (
             isAdmin ? (
               <div className={styles.adminActions}>
@@ -268,7 +284,7 @@ export default function PollCard({
                   className={styles.approveBtnMini}
                   onClick={() => onApprove?.(poll.id)}
                 >
-                  ✓ Approve
+                  <CheckIcon size={12} style={{ marginRight: '4px' }} /> Approve
                 </button>
               </div>
             ) : (
@@ -280,7 +296,7 @@ export default function PollCard({
               onClick={() => onVote(poll.id)}
               disabled={!walletAddress}
             >
-              Vote →
+              Vote <ArrowRightIcon size={14} style={{ marginLeft: '4px' }} />
             </button>
           ) : (
             <span className={styles.endedTag}>Ended</span>
@@ -290,3 +306,4 @@ export default function PollCard({
     </article>
   );
 }
+

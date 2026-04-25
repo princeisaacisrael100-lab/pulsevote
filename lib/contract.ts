@@ -27,8 +27,8 @@ export const CATEGORIES = ["General","Technology","Sports","Politics","Entertain
 export type CategoryName = typeof CATEGORIES[number];
 
 export const CATEGORY_ICONS: Record<string, string> = {
-  General: "💬", Technology: "💻", Sports: "⚽", Politics: "🏛",
-  Entertainment: "🎬", Science: "🔬", Other: "📌",
+  General: "General", Technology: "Technology", Sports: "Sports", Politics: "Politics",
+  Entertainment: "Entertainment", Science: "Science", Other: "Other",
 };
 
 export const STATUS = { PENDING: 0, ACTIVE: 1, CLOSED: 2, DELETED: 3 } as const;

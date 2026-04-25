@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Poll } from "@/lib/contract";
 import styles from "./VoteModal.module.css";
+import { CrossIcon, CheckIcon, ExternalLinkIcon, ArrowRightIcon } from "@/components/Icons";
 
 interface Props {
   poll: Poll | null;
@@ -34,7 +35,7 @@ export default function VoteModal({ poll, onClose, onSubmit }: Props) {
       <div className={styles.modal}>
         <div className={styles.header}>
           <span className={styles.tag}>Cast Your Vote</span>
-          <button className={styles.closeBtn} onClick={onClose}>✕</button>
+          <button className={styles.closeBtn} onClick={onClose}><CrossIcon size={18} /></button>
         </div>
 
         <h2 className={styles.question}>{poll.question}</h2>
@@ -48,22 +49,22 @@ export default function VoteModal({ poll, onClose, onSubmit }: Props) {
             >
               <span className={styles.letter}>{String.fromCharCode(65 + i)}</span>
               <span className={styles.choiceText}>{opt}</span>
-              {selected === i && <span className={styles.check}>✓</span>}
+              {selected === i && <span className={styles.check}><CheckIcon size={14} /></span>}
             </button>
           ))}
         </div>
 
         {txHash ? (
           <div className={styles.success}>
-            <div className={styles.successIcon}>✓</div>
+            <div className={styles.successIcon}><CheckIcon size={48} /></div>
             <p>Vote recorded on-chain!</p>
             <a href={`https://sepolia.etherscan.io/tx/${txHash}`} target="_blank" rel="noreferrer" className={styles.txLink}>
-              View transaction ↗
+              View transaction <ExternalLinkIcon size={14} style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '4px' }} />
             </a>
           </div>
         ) : (
           <button className={styles.submitBtn} onClick={handleSubmit} disabled={selected === null || loading}>
-            {loading ? <><span className={styles.spinner} /> Signing...</> : "Submit Vote →"}
+            {loading ? <><span className={styles.spinner} /> Signing...</> : <>Submit Vote <ArrowRightIcon size={16} style={{ marginLeft: '8px' }} /></>}
           </button>
         )}
         {err && <p className={styles.err}>{err}</p>}
@@ -71,3 +72,4 @@ export default function VoteModal({ poll, onClose, onSubmit }: Props) {
     </div>
   );
 }
+

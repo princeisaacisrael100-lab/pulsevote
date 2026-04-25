@@ -8,6 +8,19 @@ import Toast from "@/components/Toast";
 import { formatDistanceToNow } from "date-fns";
 import styles from "./admin.module.css";
 
+import {
+  LockIcon,
+  CrownIcon,
+  LockKeyIcon,
+  ArrowRightIcon,
+  NoEntryIcon,
+  PartyIcon,
+  CheckIcon,
+  CrossIcon,
+  TrashIcon,
+  CATEGORY_SVG_ICONS,
+} from "@/components/Icons";
+
 type ToastState = { msg: string; type: "success"|"error"|"info" } | null;
 
 export default function AdminPage() {
@@ -103,7 +116,7 @@ export default function AdminPage() {
         {/* Admin Mode active */}
         {isAdmin && (
           <div className={styles.adminBanner}>
-            <span className={styles.adminBannerIcon}>🔒</span>
+            <span className={styles.adminBannerIcon}><LockIcon /></span>
             <p>
               You are connected as the <strong>Verified Auditor</strong>. You have exclusive rights to approve, reject, and manage all community polls.
             </p>
@@ -114,7 +127,7 @@ export default function AdminPage() {
         <div className={styles.pageHeader}>
           <div>
             <div className={styles.breadcrumb}>Dashboard / Admin Panel</div>
-            <h1 className={styles.pageTitle}>👑 Admin Panel</h1>
+            <h1 className={styles.pageTitle}><CrownIcon size={24} style={{ marginRight: '10px', verticalAlign: 'bottom' }} /> Admin Panel</h1>
             <p className={styles.pageSub}>Review submitted polls, manage community content.</p>
           </div>
           <div className={styles.headerStats}>
@@ -136,14 +149,14 @@ export default function AdminPage() {
         {/* Not connected */}
         {!wallet.address ? (
           <div className={styles.gateBox}>
-            <div className={styles.gateIcon}>🔐</div>
+            <div className={styles.gateIcon}><LockKeyIcon size={48} /></div>
             <h2 className={styles.gateTitle}>Admin Access Required</h2>
             <p className={styles.gateSub}>Connect the owner wallet to access the admin panel.</p>
-            <button className={styles.connectBtn} onClick={handleConnect}>Connect Wallet →</button>
+            <button className={styles.connectBtn} onClick={handleConnect}>Connect Wallet <ArrowRightIcon size={16} style={{ marginLeft: '8px' }} /></button>
           </div>
         ) : !isAdmin ? (
           <div className={styles.gateBox}>
-            <div className={styles.gateIcon}>⛔</div>
+            <div className={styles.gateIcon}><NoEntryIcon size={48} /></div>
             <h2 className={styles.gateTitle}>Access Denied</h2>
             <p className={styles.gateSub}>Only the contract owner can access this panel.</p>
           </div>
@@ -169,7 +182,7 @@ export default function AdminPage() {
               <div className={styles.loadingMsg}>Loading polls...</div>
             ) : tabPolls.length === 0 ? (
               <div className={styles.emptyTab}>
-                {tab === "pending" ? "🎉 No polls pending review!" : `No ${tab} polls.`}
+                {tab === "pending" ? <><PartyIcon size={20} style={{ marginRight: '10px', verticalAlign: 'middle' }} /> No polls pending review!</> : `No ${tab} polls.`}
               </div>
             ) : (
               <div className={styles.pollList}>
@@ -177,12 +190,13 @@ export default function AdminPage() {
                   const total = poll.votes.reduce((a,b)=>a+b,0);
                   const cat = CATEGORIES[poll.category] ?? "General";
                   const isActing = acting === poll.id;
+                  const CatIcon = CATEGORY_SVG_ICONS[cat];
                   return (
                     <div key={poll.id} className={styles.pollRow}>
                       <div className={styles.pollLeft}>
                         <div className={styles.pollTopMeta}>
                           <span className={styles.pollId}>#{String(poll.id).padStart(3,"0")}</span>
-                          <span className={styles.pollCat}>{CATEGORY_ICONS[cat]} {cat}</span>
+                          <span className={styles.pollCat}>{CatIcon && <CatIcon size={14} style={{ marginRight: '6px', verticalAlign: 'middle' }} />} {cat}</span>
                           <span className={styles.pollTime}>
                             {formatDistanceToNow(new Date(poll.createdAt * 1000), {addSuffix:true})}
                           </span>
@@ -216,14 +230,14 @@ export default function AdminPage() {
                               onClick={() => handleApprove(poll)}
                               disabled={isActing}
                             >
-                              {isActing ? "..." : "✓ Approve"}
+                              {isActing ? "..." : <><CheckIcon size={14} style={{ marginRight: '6px' }} /> Approve</>}
                             </button>
                             <button
                               className={`${styles.rejectBtn} ${isActing ? styles.acting : ""}`}
                               onClick={() => handleReject(poll)}
                               disabled={isActing}
                             >
-                              {isActing ? "..." : "✕ Reject"}
+                              {isActing ? "..." : <><CrossIcon size={14} style={{ marginRight: '6px' }} /> Reject</>}
                             </button>
                           </>
                         )}
@@ -233,7 +247,7 @@ export default function AdminPage() {
                             onClick={() => handleClose(poll)}
                             disabled={isActing}
                           >
-                            {isActing ? "..." : "🔒 Close"}
+                            {isActing ? "..." : <><LockIcon size={14} style={{ marginRight: '6px' }} /> Close</>}
                           </button>
                         )}
                         <button
@@ -241,7 +255,7 @@ export default function AdminPage() {
                           onClick={() => handleDelete(poll)}
                           disabled={isActing}
                         >
-                          {isActing ? "..." : "🗑"}
+                          {isActing ? "..." : <TrashIcon size={14} />}
                         </button>
                       </div>
                     </div>
@@ -257,3 +271,4 @@ export default function AdminPage() {
     </>
   );
 }
+

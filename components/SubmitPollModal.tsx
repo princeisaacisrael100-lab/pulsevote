@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { CATEGORIES } from "@/lib/contract";
 import styles from "./SubmitPollModal.module.css";
+import { CrossIcon, HourglassIcon, PartyIcon, MinusIcon, ArrowRightIcon } from "@/components/Icons";
 
 interface Props {
   onClose: () => void;
@@ -47,16 +48,16 @@ export default function SubmitPollModal({ onClose, onSubmit }: Props) {
             <div className={styles.tag}>New Proposal</div>
             <h2 className={styles.title}>Submit a Poll</h2>
           </div>
-          <button className={styles.closeBtn} onClick={onClose}>✕</button>
+          <button className={styles.closeBtn} onClick={onClose}><CrossIcon size={18} /></button>
         </div>
 
         <p className={styles.notice}>
-          ⏳ Your poll will be reviewed by the admin before going live.
+          <HourglassIcon size={14} style={{ marginRight: '6px', verticalAlign: 'middle' }} /> Your poll will be reviewed by the admin before going live.
         </p>
 
         {done ? (
           <div className={styles.success}>
-            <div className={styles.successIcon}>🎉</div>
+            <div className={styles.successIcon}><PartyIcon size={48} /></div>
             <p>Poll submitted for review!</p>
             <span>The admin will approve it shortly.</span>
           </div>
@@ -98,7 +99,7 @@ export default function SubmitPollModal({ onClose, onSubmit }: Props) {
                       placeholder={`Choice ${letters[i]}`}
                       value={opt} onChange={e => updateOpt(i, e.target.value)} />
                     {options.length > 2 && (
-                      <button className={styles.removeBtn} onClick={() => removeOpt(i)}>−</button>
+                      <button className={styles.removeBtn} onClick={() => removeOpt(i)}><MinusIcon size={14} /></button>
                     )}
                   </div>
                 ))}
@@ -111,7 +112,7 @@ export default function SubmitPollModal({ onClose, onSubmit }: Props) {
             {err && <p className={styles.err}>{err}</p>}
 
             <button className={styles.submitBtn} onClick={handleSubmit} disabled={loading}>
-              {loading ? <><span className={styles.spinner} /> Submitting...</> : "Submit for Review →"}
+              {loading ? <><span className={styles.spinner} /> Submitting...</> : <>Submit for Review <ArrowRightIcon size={16} style={{ marginLeft: '8px' }} /></>}
             </button>
           </>
         )}
@@ -119,3 +120,4 @@ export default function SubmitPollModal({ onClose, onSubmit }: Props) {
     </div>
   );
 }
+

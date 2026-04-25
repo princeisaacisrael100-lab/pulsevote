@@ -10,6 +10,31 @@ import SubmitPollModal from "@/components/SubmitPollModal";
 import Toast from "@/components/Toast";
 import styles from "./page.module.css";
 
+import {
+  LockIcon,
+  ExternalLinkIcon,
+  BallotIcon,
+  SearchIcon,
+  WarningIcon,
+  ChatIcon,
+  LaptopIcon,
+  SoccerIcon,
+  PoliticsIcon,
+  FilmIcon,
+  MicroscopeIcon,
+  PinIcon,
+} from "@/components/Icons";
+
+const CATEGORY_SVG_ICONS: Record<string, React.ElementType> = {
+  General: ChatIcon,
+  Technology: LaptopIcon,
+  Sports: SoccerIcon,
+  Politics: PoliticsIcon,
+  Entertainment: FilmIcon,
+  Science: MicroscopeIcon,
+  Other: PinIcon,
+};
+
 type FilterTab = "all" | "live" | "closed" | "my";
 type ToastState = { msg: string; type: "success" | "error" | "info" } | null;
 
@@ -138,7 +163,7 @@ export default function Home() {
 
       {isAdmin && (
         <div className={styles.adminBanner}>
-          <span className={styles.adminBannerIcon}>🔒</span>
+          <span className={styles.adminBannerIcon}><LockIcon /></span>
           <p>
             Connected as <strong>Verified Auditor</strong> — you can approve, reject, and manage all community polls.
           </p>
@@ -173,7 +198,7 @@ export default function Home() {
             target="_blank" rel="noreferrer"
             className={styles.ghostBtn}
           >
-            View contract ↗
+            View contract <ExternalLinkIcon size={14} style={{ display: 'inline', verticalAlign: 'middle', marginLeft: '4px' }} />
           </a>
         </div>
 
@@ -218,9 +243,7 @@ export default function Home() {
 
           <div className={styles.searchWrap}>
             <span className={styles.searchIcon}>
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/>
-              </svg>
+              <SearchIcon size={14} />
             </span>
             <input
               className={styles.searchInput}
@@ -237,21 +260,24 @@ export default function Home() {
             className={`${styles.catChip} ${catFilter === null ? styles.activeCat : ""}`}
             onClick={() => setCatFilter(null)}
           >All</button>
-          {CATEGORIES.map((c, i) => (
-            <button
-              key={i}
-              className={`${styles.catChip} ${catFilter === i ? styles.activeCat : ""}`}
-              onClick={() => setCatFilter(catFilter === i ? null : i)}
-            >
-              {CATEGORY_ICONS[c]} {c}
-            </button>
-          ))}
+          {CATEGORIES.map((c, i) => {
+            const Icon = CATEGORY_SVG_ICONS[c];
+            return (
+              <button
+                key={i}
+                className={`${styles.catChip} ${catFilter === i ? styles.activeCat : ""}`}
+                onClick={() => setCatFilter(catFilter === i ? null : i)}
+              >
+                {Icon && <Icon size={14} style={{ marginRight: '6px' }} />} {c}
+              </button>
+            );
+          })}
         </div>
 
         {/* Content */}
         {!wallet.address ? (
           <div className={styles.empty}>
-            <div className={styles.emptyIcon}>🗳</div>
+            <div className={styles.emptyIcon}><BallotIcon size={48} /></div>
             <h3 className={styles.emptyTitle}>Connect to participate</h3>
             <p className={styles.emptySub}>Connect your MetaMask wallet on Sepolia to view and vote on community polls.</p>
             <button className={styles.primaryBtn} onClick={handleConnect}>Connect wallet</button>
@@ -270,7 +296,7 @@ export default function Home() {
           </div>
         ) : filtered.length === 0 ? (
           <div className={styles.empty}>
-            <div className={styles.emptyIcon}>🔍</div>
+            <div className={styles.emptyIcon}><SearchIcon size={48} /></div>
             <h3 className={styles.emptyTitle}>No polls found</h3>
             <p className={styles.emptySub}>
               {polls.length === 0
@@ -300,7 +326,7 @@ export default function Home() {
           </div>
         )}
 
-        {error && <div className={styles.errorBanner}>⚠ {error}</div>}
+        {error && <div className={styles.errorBanner}><WarningIcon size={16} style={{ marginRight: '8px', verticalAlign: 'middle' }} /> {error}</div>}
       </div>
 
       {/* FAB */}
@@ -321,3 +347,4 @@ export default function Home() {
     </>
   );
 }
+
